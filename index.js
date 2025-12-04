@@ -19,7 +19,7 @@ app.use(express.json({
     }
 }));
 app.use(cors({
-    origin: ['http://localhost:5000', 'https://hms-management-system-scab.onrender.com'],
+    origin: ['http://localhost:5000'],
     credentials: true,
     optionsSuccessStatus: 200,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
