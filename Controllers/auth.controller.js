@@ -60,7 +60,7 @@ export const signIn = async (req, res, next) =>{
 
         if(!staff){
             return res.status(400).json({
-                message: "Invalid credentials"
+                message: "User does not exist"
             })
         };
 
