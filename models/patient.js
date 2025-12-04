@@ -22,7 +22,6 @@ export const patientSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        match: [/\S+@\S+\.\S+/, "Please fill a valid email address"]
     },
     contact: {
         type: String,
