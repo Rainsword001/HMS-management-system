@@ -1,6 +1,4 @@
 import Patient from "../models/patient.js";
-import { createPaystackCustomer, createDedicatedAccount } from "../services/paystack.service.js";
-import VirtualAccount from "../models/virtualAccount.js";
 
 // Create Patient Controller
 export const createPatient = async (req, res) => {
@@ -32,35 +30,10 @@ export const createPatient = async (req, res) => {
 
     await newPatient.save();
 
-    
-    // ✔ Automatically create wallet for the patient
-    // 1. Create Paystack Customer
-    
-        const customer = await createPaystackCustomer({
-        email: newPatient.email || `${newPatient._id}@patients.local`,
-        first_name: newPatient.firstName || newPatient.name?.split(' ')[0] || newPatient.name,
-        last_name: newPatient.lastName || newPatient.name?.split(' ').slice(1).join(' ') || ""
-        });
-
-        const dva = await createDedicatedAccount({ customer: customer.id, preferred_bank: "wema-bank" });
-
-        // Persist mapping to DB (save accountNumber(s) inside accounts array)
-        await VirtualAccount.create({
-        patientId: newPatient._id,
-        accountReference: dva.reference || dva.account_reference || `PAT-${newPatient._id}`,
-        customerId: customer.id,
-        accounts: [{
-            bankName: dva.bank || dva.provider || dva.bank_name || "Unknown",
-            accountNumber: dva.account_number || dva.accountNumber || dva.account_number,
-            provider: dva.provider || dva.provider_slug || null,
-        }],
-        walletId: wallet._id
-        });
-
+   
     return res.status(201).json({
       message: "Patient created successfully",
       patient: newPatient,
-      VirtualAccount,
     });
 
   } catch (error) {
