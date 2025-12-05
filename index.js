@@ -41,7 +41,7 @@ app.use('/api/v1/hms/pay', paystackRouter)
 
 
 
-app.listen(PORT, () =>{
-    DB();
+app.listen(PORT, async() =>{
+   await DB();
     console.log('server is running')
 })
