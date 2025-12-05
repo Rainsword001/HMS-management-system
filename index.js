@@ -35,7 +35,7 @@ const startServer = async () => {
     try {
         await DB(); // Connect to MongoDB FIRST
         app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
+            console.log(`Server is running`);
         });
     } catch (error) {
         console.error("Failed to start server:", error);
