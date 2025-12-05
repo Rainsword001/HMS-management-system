@@ -18,10 +18,11 @@ export const patientSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: false,
+        required: [true, "Email is required"],
         unique: true,
         lowercase: true,
         trim: true,
+        match: [/.+\@.+\..+/, "Please fill a valid email address"]
     },
     contact: {
         type: String,
