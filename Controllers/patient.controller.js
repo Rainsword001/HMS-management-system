@@ -1,12 +1,15 @@
 import Patient from "../models/patient.js";
 import Wallet from "../models/wallet.js";
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import { JWT_SECRET, JWT_EXPIRES_IN } from "../config/env.js";
 
 export const createPatient = async (req, res) => {
   try {
-    const { name, age, gender, email, contact, admissionward } = req.body;
+    const { name, age, gender, email, password, contact, admissionward } = req.body;
 
-    // Validate
-    if (!name || !age || !gender || !email || !contact || !admissionward) {
+    // Validate input
+    if (!name || !age || !gender || !email || !password || !contact || !admissionward) {
       return res.status(400).json({
         message: "All fields are required",
       });
@@ -20,12 +23,17 @@ export const createPatient = async (req, res) => {
       });
     }
 
+    //hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt)
+
     // Create patient
     const newPatient = await Patient.create({
       name,
       age,
       gender,
       email,
+      password: hashPassword,
       contact,
       admissionward,
     });
@@ -35,6 +43,9 @@ export const createPatient = async (req, res) => {
       patientId: newPatient._id,
       balance: 0,
     });
+
+    //generate token
+    const token = await jwt.sign({ patientId: Patient._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES_IN})
 
     return res.status(201).json({
       message: "Patient created successfully",
@@ -52,6 +63,50 @@ export const createPatient = async (req, res) => {
 };
 
 
+export const logIn = async (req, res, next) => {
+    try {
+        const {email, password} = req.body;
+
+        //validate input
+        if(!email || !password){
+            return res.status(400).json({
+                message: "All fields are required"
+            })
+        }
+
+        //check for existing users
+        const existUser = await Patient.findOne({email});
+
+        if(!existUser){
+            return res.status(400).json({
+                message: "User not found"
+            })
+        }
+
+
+        //check if password is matched
+
+        const isMatch = await bcrypt.compare(password, Patient.password)
+
+        if(!isMatch){
+            return res.status(400).json({
+                message: "Invalid credentials"
+            })
+        }
+
+        //generate token
+        const token = await jwt.sign({ patientId: Patient._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES_IN})
+
+        return res.status(201).json({
+            message: "login successful",
+            success: true,
+            token,
+            Wallet
+        })
+    } catch (error) {
+        
+    }
+}
 
 // Get All Patient
 export const getAllPatients = async (req, res) => {

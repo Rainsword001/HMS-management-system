@@ -23,6 +23,12 @@ export const patientSchema = new mongoose.Schema({
         trim: true,
         match: [/\S+.\S+@\S+/, "Please fill a valid email address"]
     },
+    password:{
+        type: String,
+        required:true,
+        trim:true,
+        min: [6, "Must be at least 6 characters"]
+    },
     contact: {
         type: String,
         required: [true, "Contact number is required"],

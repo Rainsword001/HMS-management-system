@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken"
-import Patient from "../models/patient"
+import Patient from "../models/patient.js"
 
 
 
-const authenticationPatient = async (req, res, next) =>{
+export const authenticationPatient = async (req, res, next) =>{
     try {
         const token = req.header('Authorization')?.replace('Bearer', '')
 
@@ -30,7 +30,7 @@ const authenticationPatient = async (req, res, next) =>{
 
 
 
-const authenticateAdmin = async (req, res, next) => {
+export const authenticateAdmin = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     
@@ -56,7 +56,3 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
-
-
-
-export default {authenticationPatient, authenticateAdmin}

@@ -1,6 +1,7 @@
 import { Router } from "express";
-import {  createPatient, getPatient, updatePatient, deletePatient, getAllPatients} from "../Controllers/patient.controller.js";
+import {  createPatient, logIn, getPatient, updatePatient, deletePatient, getAllPatients} from "../Controllers/patient.controller.js";
 import { verifyToken, authorizeRole} from "../Middlewares/auth.middlewares.js";
+import {authenticationPatient} from '../Middlewares/wallet.middleware.js'
 
 const patientRouter = Router();
 
@@ -14,6 +15,9 @@ patientRouter.get('/get', verifyToken, authorizeRole('admin', 'doctor', 'nurse')
 
 // Create Patient - Accessible by 'admin' and 'doctor'
 patientRouter.post('/', verifyToken, authorizeRole('admin', 'doctor'), createPatient);
+
+// Patient Login
+patientRouter.post('/login', logIn)
 
 // Update Patient - Accessible by 'admin' and 'doctor'
 patientRouter.put('/:patientId', verifyToken, authorizeRole('admin', 'doctor'), updatePatient);
