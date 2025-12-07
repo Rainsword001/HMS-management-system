@@ -34,8 +34,6 @@ export const createPayment = async (req, res) =>{
 }
 
 
-
-
 export const getPayment = async (req, res) =>{
     try {
         const response = await paymentInstance.getPayment(req.body);
@@ -49,4 +47,27 @@ export const getPayment = async (req, res) =>{
             message: error.message
         })
     }
-}   
+
+} 
+
+export const paystackWebhook = async (req, res) =>{
+    const signature = req.headers ["x-paystack-signature"];
+
+    //verify signature
+    const isValid = verifyWebhookSignature(req.rawBody, signature);
+
+    if(!isValid) {
+        return res.status(401).json({
+            message: "Invalid webhook signature"
+        })
+    }
+
+
+    const data = req.body;
+    if(data.event === "charge.success") {
+        console.log("Payment successful", data.data.reference)
+    }
+
+
+    return res.status(200).send('OK')
+}

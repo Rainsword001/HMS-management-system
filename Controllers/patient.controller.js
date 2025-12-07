@@ -1,24 +1,26 @@
 import Patient from "../models/patient.js";
+import Wallet from "../models/wallet.js";
 
-// Create Patient Controller
 export const createPatient = async (req, res) => {
   try {
     const { name, age, gender, email, contact, admissionward } = req.body;
 
+    // Validate
     if (!name || !age || !gender || !email || !contact || !admissionward) {
       return res.status(400).json({
         message: "All fields are required",
       });
     }
 
-    // Check if patient already exists
-    const userExists = await Patient.findOne({ name });
+    // Check if patient already exists (email is better)
+    const userExists = await Patient.findOne({ email });
     if (userExists) {
       return res.status(400).json({
         message: "Patient already exists",
       });
     }
-  // Create new patient
+
+    // Create patient
     const newPatient = await Patient.create({
       name,
       age,
@@ -28,12 +30,16 @@ export const createPatient = async (req, res) => {
       admissionward,
     });
 
-    await newPatient.save();
+    // Create wallet for patient
+    const wallet = await Wallet.create({
+      patientId: newPatient._id,
+      balance: 0,
+    });
 
-   
     return res.status(201).json({
       message: "Patient created successfully",
       patient: newPatient,
+      wallet, // helpful to return
     });
 
   } catch (error) {

@@ -9,7 +9,6 @@ export const patientSchema = new mongoose.Schema({
     age: {
         type: Number,
         required: [true, "Age is required"],
-        min: 0
     },
     gender: {
         type: String,
@@ -22,7 +21,7 @@ export const patientSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        match: [/.+\@.+\..+/, "Please fill a valid email address"]
+        match: [/\S+.\S+@\S+/, "Please fill a valid email address"]
     },
     contact: {
         type: String,

@@ -1,4 +1,5 @@
 import axios from "axios";
+import crypto from 'crypto'
 
 const paystack = (request) => {
   const MySecretKey = process.env.PAYSTACK_SECRET_KEY;
@@ -42,7 +43,8 @@ const paystack = (request) => {
     request(options, callback);
   };
 
-  return { initializePayment, verifyPayment };
+
+  return { initializePayment, verifyPayment};
 };
 
 export default paystack;

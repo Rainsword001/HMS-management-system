@@ -2,6 +2,7 @@ import request from "request";
 import Payments from "../models/paystack.model.js";
 import paystack from "../utils/paystack.util.js";
 import _ from "lodash";
+import crypto from 'crypto'
 
 const { initializePayment, verifyPayment } = paystack(request);
 
@@ -72,6 +73,16 @@ class PaymentService {
       }
     });
   }
+
+   // verify Webhook Signature
+  verifyWebhookSignature = (payload, signature) =>{
+    const hash = crypto.creatHmac('sha512', PAYSTACK_SECRET_KEY)
+    .update(JSON.stringify(payload)).digest('hex');
+
+
+    return hash === signature
+  }
+
 }
 
 export default PaymentService;
