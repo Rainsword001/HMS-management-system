@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use (bodyParser.json())
 app.use(bodyParser.urlencoded({extended : false}))
 app.use(cors({
-    origin: ['http://localhost:5000'],
+    origin: ['http://localhost:5000', 'http://localhost:3000'],
     credentials: true,
     optionsSuccessStatus: 200,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
