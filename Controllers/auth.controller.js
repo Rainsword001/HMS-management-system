@@ -168,3 +168,42 @@ export const deactivateStaff = async (req, res, next) => {
         });
     }
 };
+
+
+//Activate staff
+// Activate staff
+export const activateStaff = async (req, res, next) => {
+    try {
+        const { staffId } = req.params;
+
+        // Check if staff exists
+        const staff = await Staff.findById(staffId);
+
+        if (!staff) {
+            return res.status(404).json({
+                message: "Staff not found"
+            });
+        }
+
+        // Update status
+        staff.status = "active";
+        await staff.save();
+
+        return res.status(200).json({
+            message: "Staff activated successfully",
+            staff: {
+                id: staff._id,
+                name: staff.name,
+                email: staff.email,
+                role: staff.role,
+                status: staff.status
+            }
+        });
+
+    } catch (error) {
+        console.error("ActivateStaff Error:", error);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+};
