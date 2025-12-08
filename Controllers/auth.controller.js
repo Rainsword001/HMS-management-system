@@ -132,7 +132,6 @@ export const getAllStaff = async (req, res, next) => {
 };
 
 
-
 // Deactivate staffs
 export const deactivateStaff = async (req, res, next) => {
     try {
