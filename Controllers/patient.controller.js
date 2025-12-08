@@ -64,49 +64,60 @@ export const createPatient = async (req, res) => {
 
 
 export const logIn = async (req, res, next) => {
-    try {
-        const {email, password} = req.body;
+  try {
+    const { email, password } = req.body;
 
-        //validate input
-        if(!email || !password){
-            return res.status(400).json({
-                message: "All fields are required"
-            })
-        }
-
-        //check for existing users
-        const existUser = await Patient.findOne({email});
-
-        if(!existUser){
-            return res.status(400).json({
-                message: "User not found"
-            })
-        }
-
-
-        //check if password is matched
-
-        const isMatch = await bcrypt.compare(password, Patient.password)
-
-        if(!isMatch){
-            return res.status(400).json({
-                message: "Invalid credentials"
-            })
-        }
-
-        //generate token
-        const token = await jwt.sign({ patientId: Patient._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES_IN})
-
-        return res.status(201).json({
-            message: "login successful",
-            success: true,
-            token,
-            Wallet
-        })
-    } catch (error) {
-        
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "All fields are required"
+      });
     }
-}
+
+    // Check for existing user
+    const existUser = await Patient.findOne({ email });
+
+    if (!existUser) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    // Check password match
+    const isMatch = await bcrypt.compare(password, existUser.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid credentials"
+      });
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { patientId: existUser._id },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    return res.status(200).json({
+      message: "Login successful",
+      success: true,
+      token,
+      patient: {
+        name: existUser.name,
+        email: existUser.email,
+      }
+    });
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message
+    });
+  }
+};
+
 
 // Get All Patient
 export const getAllPatients = async (req, res) => {

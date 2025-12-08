@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {  createPatient, logIn, getPatient, updatePatient, deletePatient, getAllPatients} from "../Controllers/patient.controller.js";
 import { verifyToken, authorizeRole} from "../Middlewares/auth.middlewares.js";
-import {authenticationPatient} from '../Middlewares/wallet.middleware.js'
+import {authenticatePatient} from '../Middlewares/wallet.middleware.js'
 
 const patientRouter = Router();
 
