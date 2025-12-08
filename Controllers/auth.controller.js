@@ -109,3 +109,63 @@ export const signOut = async (req, res, next) =>{
         });
     }
 }
+
+
+
+// get all staff
+export const getAllStaff = async (req, res, next) => {
+    try {
+        const staffs = await Staff.find().select('-password'); // Hide password
+
+        return res.status(200).json({
+            message: "All staff fetched successfully",
+            count: staffs.length,
+            staffs
+        });
+
+    } catch (error) {
+        console.error("GetAllStaff Error:", error);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+};
+
+
+
+// Deactivate staffs
+export const deactivateStaff = async (req, res, next) => {
+    try {
+        const { staffId } = req.params;
+
+        // Check staff
+        const staff = await Staff.findById(staffId);
+
+        if (!staff) {
+            return res.status(404).json({
+                message: "Staff not found"
+            });
+        }
+
+        // Update status
+        staff.status = "inactive";
+        await staff.save();
+
+        return res.status(200).json({
+            message: "Staff deactivated successfully",
+            staff: {
+                id: staff._id,
+                name: staff.name,
+                email: staff.email,
+                role: staff.role,
+                status: staff.status
+            }
+        });
+
+    } catch (error) {
+        console.error("DeactivateStaff Error:", error);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+};
