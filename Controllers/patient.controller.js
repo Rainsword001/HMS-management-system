@@ -121,22 +121,37 @@ export const logIn = async (req, res, next) => {
 
 // Get All Patient
 export const getAllPatients = async (req, res) => {
-    try {
-        const patients = await Patient.find().sort({ createdAt: -1 });
-        
-        res.status(200).json({
-            success: true,
-            total: patients.length,
-            data: patients
-        });
-    } catch (error) {
-        console.error("Get All Patients Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Unable to retrieve patients"
-        });
-    }
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [patients, total] = await Promise.all([
+      Patient.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Patient.countDocuments()
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Patients retrieved successfully",
+      page,
+      limit,
+      total,
+      data: patients
+    });
+
+  } catch (error) {
+    console.error("Get All Patients Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Unable to retrieve patients"
+    });
+  }
 };
+
 
 
 //get all patients
