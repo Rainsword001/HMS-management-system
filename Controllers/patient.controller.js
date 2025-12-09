@@ -155,7 +155,7 @@ export const getAllPatients = async (req, res) => {
 
 
 //get all patients
-export const getPatient = async (req, res, next) => {
+export const getPatientById = async (req, res, next) => {
     try {
         const { patientId } = req.params;
         const patient = await Patient.findById(patientId).populate('userId').populate('walletId');
