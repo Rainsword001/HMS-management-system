@@ -8,7 +8,6 @@ import {
   activateStaff
 } from "../Controllers/auth.controller.js";
 import { verifyToken, authorizeRole } from "../Middlewares/auth.middlewares.js";
-import { authenticateAdmin } from "../Middlewares/wallet.middleware.js";
 
 const authrouter = Router();
 

@@ -29,7 +29,7 @@ export const createPatient = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, salt)
 
     // Create patient
-    const newPatient = await Patient.create({
+    const patient = await Patient.create({
       name,
       age,
       gender,
@@ -41,29 +41,37 @@ export const createPatient = async (req, res) => {
 
     // Create wallet for patient
     const wallet = await Wallet.create({
-      patientId: newPatient._id,
+      patientId: patient._id,
       balance: 0,
     });
-    Patient.wallet = wallet._id;
+    patient.wallet = wallet._id;
 
     // Create virtual account via Paystack
-  try {
-    const virtualAccountData = await createVirtualAccount(Patient);
-    Patient.virtualAccount = virtualAccountData;
-  } catch (error) {
-    console.error('Virtual account creation failed:', error.message);
-    // Continue registration even if VA creation fails - can retry later
-  }
+    try {
+      const virtualAccountData = await createVirtualAccount({
+        email: patient.email,
+        name: patient.name,
+        // add any other required fields for Paystack
+      });
+      patient.virtualAccount = {
+        accountNumber: virtualAccountData.account_number,
+        bankName: virtualAccountData.bank.name,
+        accountName: virtualAccountData.account_name,
+      };
+    } catch (paystackError) {
+      console.error('Paystack virtual account failed:', paystackError.message);
+      // We continue – admin can retry later
+    }
 
-        await Patient.save();
+    await patient.save();
 
     //generate token
     const token = await jwt.sign({ patientId: Patient._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES_IN})
 
     return res.status(201).json({
       message: "Patient created successfully",
-      patient: newPatient,
-      wallet, // helpful to return
+      patient: patient,
+      
     });
 
   } catch (error) {

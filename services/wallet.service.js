@@ -3,7 +3,7 @@ import  axios from 'axios';
 import Wallet from '../models/wallet.js';
 import Transaction from '../models/transaction.model.js'
 import Patient from '../models/patient.js'
-import { checkIdempotency, saveIdempotencyKey } from '../utils/idempotency.js';
+import { checkIdempotency, saveIdempotency } from '../utils/idempotency.js';
 import { PAYSTACK_SECRET_KEY, PAYSTACK_BASE_URL,  } from '../config/env.js';
 
 
@@ -254,7 +254,7 @@ export const debitWallet = async (patientId, amount, description, invoiceId = nu
     metadata: { invoiceId }
   });
   
-  if (idempotencyKey) await saveIdempotencyKey(idempotencyKey);
+  if (idempotencyKey) await saveIdempotency(idempotencyKey);
   
   return { wallet, transaction };
 };

@@ -5,8 +5,6 @@ import authrouter from "./Routes/auth.route.js";
 import patientRouter from "./Routes/patient.route.js";
 import prescriptionRouter from "./Routes/patient.route.js";
 import walletRouter from "./Routes/wallet.route.js";
-import webhookRoute from "./Routes/webhookRoutes.js";
-import paystackRouter from "./Routes/paystack.route.js";
 import bodyParser from "body-parser";
 
 import cors from "cors";
@@ -37,8 +35,8 @@ app.use("/api/v1/auth", authrouter);
 app.use("/api/v1/patients", patientRouter);
 app.use("/api/v1/prescriptions", prescriptionRouter);
 app.use("/api/v1/wallets", walletRouter);
-app.use("/api/v1/hms/pay", paystackRouter);
-app.use("api/v1/webhooks", webhookRoute);
+
+
 
 app.listen(PORT, async () => {
   await DB();

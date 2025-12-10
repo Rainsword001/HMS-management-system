@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { sendError } from '../utils/response.js';
+import Patient from '../models/patient.js'
 
 
 
@@ -27,7 +28,6 @@ export const verifyToken = (req, res, next) => {
 }
 
 
-
 // Authorization Middleware
 
 export const authorizeRole = (...allowedRoles) =>{
@@ -38,7 +38,6 @@ export const authorizeRole = (...allowedRoles) =>{
         next();
     }
 }
-
 
 
 //Patient Authenthication
