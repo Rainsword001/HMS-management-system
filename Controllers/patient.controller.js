@@ -159,35 +159,38 @@ export const logIn = async (req, res, next) => {
 };
 
 
-// Get All Patient
+
+
 export const getAllPatients = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-    const skip = (page - 1) * limit;
+    const patients = await Patient.find()
+      .select("name age gender contact createdAt admissionward status") // only these fields
+      .sort({ createdAt: -1 }) // newest first
+      .lean(); // faster
 
-    const [patients, total] = await Promise.all([
-      Patient.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      Patient.countDocuments()
-    ]);
+    // Map to clean, readable format
+    const patientList = patients.map(patient => ({
+      id: patient._id,
+      name: patient.name,
+      age: patient.age,
+      gender: patient.gender,
+      contact: patient.contact,
+      admissionDate: patient.createdAt.toISOString().split('T')[0], // YYYY-MM-DD
+      admissionWard: patient.admissionward,
+      status: patient.status
+    }));
 
     res.status(200).json({
       success: true,
-      message: "Patients retrieved successfully",
-      page,
-      limit,
-      total,
-      data: patients
+      count: patientList.length,
+      data: patientList
     });
 
   } catch (error) {
-    console.error("Get All Patients Error:", error);
+    console.error(error);
     res.status(500).json({
       success: false,
-      message: "Unable to retrieve patients"
+      message: "Failed to fetch patients"
     });
   }
 };
