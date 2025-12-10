@@ -5,7 +5,9 @@ import mongoose from 'mongoose';
 export const walletSchema = new mongoose.Schema({
     patientId:{
         type: mongoose.Schema.Types.ObjectId, ref: 'Patient',
-        required: true
+        required: true,
+        unique: true,
+        index:true
     },
     balance:{
         type: Number,

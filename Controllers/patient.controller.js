@@ -54,9 +54,9 @@ export const createPatient = async (req, res) => {
         // add any other required fields for Paystack
       });
       patient.virtualAccount = {
-        accountNumber: virtualAccountData.account_number,
+        accountNumber: virtualAccountData.accountNumber,
         bankName: virtualAccountData.bank.name,
-        accountName: virtualAccountData.account_name,
+        accountName: virtualAccountData.accountName,
       };
     } catch (paystackError) {
       console.error('Paystack virtual account failed:', paystackError.message);
