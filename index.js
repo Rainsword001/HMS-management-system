@@ -21,6 +21,7 @@ app.use(
     origin: [
       "http://localhost:5000",
       "http://localhost:3000",
+      "https://hms-management-system-ae3n.onrender.com",
       "https://hackathon-project-deploy.vercel.app/",
     ],
     credentials: true,
