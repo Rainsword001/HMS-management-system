@@ -70,6 +70,15 @@ export const patientSchema = new mongoose.Schema({
 }, {timestamps: true})
 
 
+// In patient.model.js
+patientSchema.methods.toJSON = function () {
+  const patient = this.toObject();
+  delete patient.password;
+  return patient;
+};
+
+
+
 
 
 
