@@ -49,8 +49,28 @@ export const patientSchema = new mongoose.Schema({
         type: String,
         enum: ["admitted", "discharged", "under observation"],
         default: "under observation"
-    }
+    },
+    //Virtual Account Details
+    virtualAccount: {
+    accountNumber: String,
+    accountName: String,
+    bankName: String,
+    bankCode: String,
+    customerId: String,
+    dedicatedAccountId: String,
+    provider: { type: String, default: 'paystack' }
+  },
+  
+  // Wallet reference
+  wallet: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Wallet'
+  },
+  
 }, {timestamps: true})
+
+
+
 
 
 

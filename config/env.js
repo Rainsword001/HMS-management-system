@@ -10,5 +10,6 @@ export const {
     JWT_SECRET,
     JWT_EXPIRES_IN,
     PAYSTACK_SECRET_KEY,
-    PAYSTACK_BASE_URL
+    PAYSTACK_BASE_URL,
+    FRONTEND_URL
 } = process.env

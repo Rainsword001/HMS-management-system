@@ -1,35 +1,89 @@
-import Wallet from "../models/wallet.js";
-import Patient from "../models/patient.js";
+import {
+  initializePayment,
+  verifyPayment,
+  handleWebhook,
+  getBalance,
+  getTransactions,
+  getVirtualAccount
+} from '../services/wallet.service.js';
+import { sendSuccess, sendError } from '../utils/response.js';
+import { FRONTEND_URL } from '../config/env.js';
 
 
-
-//create wallet for patient
-export const createWallet = async (patientId) => {
+// Initialize payment
+export const initializePayments = async (req, res) => {
   try {
-    const wallet = await Wallet.create({
-      patient: patientId,
-      balance: 0,
-      transactions: [],
-    });
-
-    return wallet;
+    const { amount } = req.body;
+    const callbackUrl = `${FRONTEND_URL}/wallet/verify`;
+    
+    const result = await initializePayment(req.patient._id, amount, callbackUrl);
+    sendSuccess(res, 200, 'Payment initialized', result);
   } catch (error) {
-    console.error("Create Wallet Error:", error);
-    throw new Error("Failed to create wallet");
+    sendError(res, 400, error.message);
   }
 };
 
+// Verify payment
+export const verifyPayments = async (req, res) => {
+  try {
+    const { reference } = req.params;
+    const result = await verifyPayment(reference);
+    sendSuccess(res, 200, 'Payment verified', result);
+  } catch (error) {
+    sendError(res, 400, error.message);
+  }
+};
 
-// get wallet by patient ID
-export const getWalletByPatientId = async (req, res) => {
-    try {
-        const { patientId } = req.query;
-        const wallet = await Wallet.findOne({ patient: patientId });
-        if (!wallet) {
-            return res.status(404).json({ message: "Wallet not found for this patient." });
-        }
-        res.status(200).json(wallet);
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+// Paystack webhook
+export const handleWebhooks = async (req, res) => {
+  try {
+    const hash = require('crypto')
+      .createHmac('sha512', PAYSTACK_SECRET_KEY)
+      .update(JSON.stringify(req.body))
+      .digest('hex');
+    
+    if (hash !== req.headers['x-paystack-signature']) {
+      return sendError(res, 401, 'Invalid signature');
     }
+    
+    const { event, data } = req.body;
+    await handleWebhook(event, data);
+    
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Webhook error:', error);
+    res.sendStatus(200); // Always return 200 to Paystack
+  }
+};
+
+// Get wallet balance
+export const getBalances = async (req, res) => {
+  try {
+    const wallet = await getBalance(req.patient._id);
+    sendSuccess(res, 200, 'Wallet balance retrieved', wallet);
+  } catch (error) {
+    sendError(res, 400, error.message);
+  }
+};
+
+// Get transaction history
+export  const getTransactionsHistory = async (req, res) => {
+  try {
+    const { page, limit, type, status } = req.query;
+    const wallet = await getBalance(req.patient._id);
+    const result = await getTransactions(wallet._id, { page, limit, type, status });
+    sendSuccess(res, 200, 'Transactions retrieved', result);
+  } catch (error) {
+    sendError(res, 400, error.message);
+  }
+};
+
+// Get virtual account details
+export const getVirtualAccounts = async (req, res) => {
+  try {
+    const virtualAccount = await getVirtualAccount(req.patient._id);
+    sendSuccess(res, 200, 'Virtual account retrieved', virtualAccount);
+  } catch (error) {
+    sendError(res, 400, error.message);
+  }
 };

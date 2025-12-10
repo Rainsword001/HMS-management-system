@@ -3,6 +3,7 @@ import Wallet from "../models/wallet.js";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { JWT_SECRET, JWT_EXPIRES_IN } from "../config/env.js";
+import { createVirtualAccount } from "../services/wallet.service.js";
 
 export const createPatient = async (req, res) => {
   try {
@@ -43,6 +44,18 @@ export const createPatient = async (req, res) => {
       patientId: newPatient._id,
       balance: 0,
     });
+    Patient.wallet = wallet._id;
+
+    // Create virtual account via Paystack
+  try {
+    const virtualAccountData = await createVirtualAccount(Patient);
+    Patient.virtualAccount = virtualAccountData;
+  } catch (error) {
+    console.error('Virtual account creation failed:', error.message);
+    // Continue registration even if VA creation fails - can retry later
+  }
+
+        await Patient.save();
 
     //generate token
     const token = await jwt.sign({ patientId: Patient._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES_IN})
