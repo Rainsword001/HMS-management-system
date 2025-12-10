@@ -1,4 +1,4 @@
-// controllers/patient.controller.js
+
 
 import Patient from "../models/patient.js";
 import Wallet from "../models/wallet.js";
@@ -150,14 +150,12 @@ export const logIn = async (req, res, next) => {
     });
 
   } catch (error) {
-    console.error("Login Error:", error);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error.message
     });
   }
 };
-
 
 
 
@@ -194,7 +192,6 @@ export const getAllPatients = async (req, res) => {
     });
   }
 };
-
 
 
 //get all patients

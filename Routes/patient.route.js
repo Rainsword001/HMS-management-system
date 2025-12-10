@@ -17,7 +17,7 @@ patientRouter.get('/get', verifyToken, authorizeRole('admin', 'doctor', 'nurse')
 patientRouter.post('/', verifyToken, authorizeRole('admin', 'doctor'), createPatient);
 
 // Patient Login
-patientRouter.post('/login', protectPatient, logIn)
+patientRouter.post('/login', logIn)
 
 // Update Patient - Accessible by 'admin' and 'doctor'
 patientRouter.put('/:patientId', verifyToken, authorizeRole('admin', 'doctor'), updatePatient);
