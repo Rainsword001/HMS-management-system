@@ -16,20 +16,26 @@ const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+const allowedOrigins = [
+  "https://hms-management-system-ae3n.onrender.com",
+  "https://hackathon-project-deploy.vercel.app"
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5000",
-      "http://localhost:3000",
-      "https://hms-management-system-ae3n.onrender.com",
-      "https://hackathon-project-deploy.vercel.app/",
-    ],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-    optionsSuccessStatus: 200,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 //Routes
 app.use("/api/v1/auth", authrouter);
